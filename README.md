@@ -1,3 +1,14 @@
+---
+title: Landmark Vision
+emoji: 🏛️
+colorFrom: purple
+colorTo: cyan
+sdk: docker
+app_port: 7860
+pinned: true
+short_description: AI-powered landmark recognition using HuggingFace Vision AI
+---
+
 # 🏛️ Landmark Vision
 
 > **AI-powered landmark recognition** — Upload any photo of a famous world landmark and get instant identification with name, country, city, and historical description.
