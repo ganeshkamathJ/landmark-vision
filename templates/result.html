@@ -115,25 +115,18 @@
           <p>{{ info.description }}</p>
         </div>
 
-        <!-- Landmark Reference Photo -->
-        {% set ref_img = landmark_ref_image if landmark_ref_image is defined else '' %}
-        {% if ref_img %}
-        <div class="result-ref-photo-card">
+        <!-- Landmark Reference Photo (loaded client-side via Wikipedia API) -->
+        <div class="result-ref-photo-card" id="ref-photo-card" style="display:none">
           <h3><i data-feather="image"></i> Landmark Photo</h3>
           <div class="ref-photo-wrapper">
-            <img
-              src="{{ ref_img }}"
-              alt="{{ info.name }}"
-              class="ref-photo-img"
-              onerror="this.parentElement.style.display='none'"
-            />
+            <img id="ref-photo-img" src="" alt="{{ info.name }}" class="ref-photo-img"
+                 onerror="document.getElementById('ref-photo-card').style.display='none'" />
             <div class="ref-photo-caption">
               <i data-feather="info"></i>
-              {{ info.name }} — {{ info.city }}, {{ info.country }}
+              {{ info.name }} &mdash; {{ info.city }}, {{ info.country }}
             </div>
           </div>
         </div>
-        {% endif %}
 
         <!-- Map Location -->
         {% if info.latitude and info.longitude %}
@@ -271,5 +264,36 @@
       });
     }
   }
+
+  // ── Fetch landmark reference image from Wikipedia (client-side) ──
+  (async function loadLandmarkPhoto() {
+    const landmarkName = {{ info.name | tojson }};
+    const card  = document.getElementById('ref-photo-card');
+    const img   = document.getElementById('ref-photo-img');
+    if (!card || !img || !landmarkName) return;
+
+    try {
+      // Wikipedia REST API — supports CORS, no key needed
+      const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(landmarkName)}`;
+      const res  = await fetch(url, { headers: { 'Accept': 'application/json' } });
+      if (!res.ok) return;
+      const data = await res.json();
+
+      // Try thumbnail first, then originalimage
+      const src = (data.originalimage && data.originalimage.source)
+                || (data.thumbnail    && data.thumbnail.source)
+                || '';
+      if (src) {
+        img.src = src;
+        img.onload = () => {
+          card.style.display = 'block';
+          // Re-run feather icons for the caption icon
+          if (window.feather) feather.replace();
+        };
+      }
+    } catch (e) {
+      // Silent fail — card stays hidden
+    }
+  })();
 </script>
 {% endblock %}
