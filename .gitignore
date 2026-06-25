@@ -1,0 +1,66 @@
+# ── Python ──────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.whl
+
+# ── Virtual environments ─────────────────────────────────────────────
+venv/
+.venv/
+env/
+.env/
+ENV/
+
+# ── Environment variables ────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+
+# ── Model weights (large binary files) ──────────────────────────────
+model/landmark_model.h5
+model/landmark_model.keras
+model/*.h5
+model/*.keras
+model/confusion_matrix.png
+model/training_summary.json
+model/landmark_labels.txt
+
+# ── Uploaded images (user data — never commit) ───────────────────────
+uploads/
+!uploads/.gitkeep
+
+# ── Dataset (too large for git) ──────────────────────────────────────
+data/
+!data/.gitkeep
+
+# ── Kaggle API credentials ───────────────────────────────────────────
+kaggle.json
+~/.kaggle/
+
+# ── IDE / Editor ─────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ── Jupyter Notebooks ────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb
+
+# ── Logs ─────────────────────────────────────────────────────────────
+*.log
+logs/
+
+# ── Testing ──────────────────────────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/

@@ -1,0 +1,464 @@
+{% extends "base.html" %}
+
+{% block title %}Landmark Vision — AI-Powered Landmark Recognition{% endblock %}
+
+{% block content %}
+
+<!-- ════════════════════════════════════════════════════════════
+     HERO SECTION
+════════════════════════════════════════════════════════════ -->
+<section class="hero" id="hero">
+  <div class="hero-bg">
+    <div class="hero-orb hero-orb--1"></div>
+    <div class="hero-orb hero-orb--2"></div>
+    <div class="hero-orb hero-orb--3"></div>
+    <div class="hero-grid"></div>
+  </div>
+
+  <div class="container hero-content">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      AI-Powered · Instant Results · 100+ Landmarks
+    </div>
+
+    <h1 class="hero-title">
+      Recognize Any<br />
+      <span class="gradient-text">World Landmark</span><br />
+      In Seconds
+    </h1>
+
+    <p class="hero-subtitle">
+      Upload a photo of any famous landmark and our MobileNetV2 deep learning model
+      will instantly identify it — giving you its name, country, city, and history.
+    </p>
+
+    <form action="{{ url_for('main.search') }}" method="GET" class="hero-search-form">
+      <div class="search-input-wrapper">
+        <i data-feather="search" class="search-icon"></i>
+        <input type="text" name="q" placeholder="Search any world landmark (e.g., Taj Mahal, Colosseum...)" />
+        <button type="submit" class="btn btn-primary">Search</button>
+      </div>
+    </form>
+
+    <div class="hero-actions">
+      <a href="#upload" class="btn btn-primary btn-lg" id="hero-cta">
+        <i data-feather="upload-cloud"></i>
+        Try It Now — It's Free
+      </a>
+      <a href="#how-it-works" class="btn btn-ghost btn-lg">
+        <i data-feather="play-circle"></i>
+        How It Works
+      </a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-number">100+</span>
+        <span class="stat-label">Landmarks</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-number">95%</span>
+        <span class="stat-label">Accuracy</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-number">&lt;2s</span>
+        <span class="stat-label">Response Time</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating landmark cards — LEFT -->
+  <div class="hero-cards-left" aria-label="Featured landmarks">
+    <a href="{{ url_for('main.search', q='Taj Mahal') }}" class="float-card float-card--4">
+      <span class="float-card-emoji">🕌</span>
+      <span>
+        <span class="float-card-label">Taj Mahal</span>
+        <span class="float-card-country">Agra, India</span>
+      </span>
+    </a>
+    <a href="{{ url_for('main.search', q='Machu Picchu') }}" class="float-card float-card--5">
+      <span class="float-card-emoji">🏔️</span>
+      <span>
+        <span class="float-card-label">Machu Picchu</span>
+        <span class="float-card-country">Cusco, Peru</span>
+      </span>
+    </a>
+    <a href="{{ url_for('main.search', q='Burj Khalifa') }}" class="float-card float-card--6">
+      <span class="float-card-emoji">🏙️</span>
+      <span>
+        <span class="float-card-label">Burj Khalifa</span>
+        <span class="float-card-country">Dubai, UAE</span>
+      </span>
+    </a>
+  </div>
+
+  <!-- Floating landmark cards — RIGHT -->
+  <div class="hero-cards" aria-label="Featured landmarks">
+    <a href="{{ url_for('main.search', q='Eiffel Tower') }}" class="float-card float-card--1">
+      <span class="float-card-emoji">🗼</span>
+      <span>
+        <span class="float-card-label">Eiffel Tower</span>
+        <span class="float-card-country">Paris, France</span>
+      </span>
+    </a>
+    <a href="{{ url_for('main.search', q='Colosseum') }}" class="float-card float-card--2">
+      <span class="float-card-emoji">🏛️</span>
+      <span>
+        <span class="float-card-label">Colosseum</span>
+        <span class="float-card-country">Rome, Italy</span>
+      </span>
+    </a>
+    <a href="{{ url_for('main.search', q='Statue of Liberty') }}" class="float-card float-card--3">
+      <span class="float-card-emoji">🗽</span>
+      <span>
+        <span class="float-card-label">Statue of Liberty</span>
+        <span class="float-card-country">New York, USA</span>
+      </span>
+    </a>
+  </div>
+
+  <div class="hero-scroll-hint">
+    <span>Scroll to explore</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════
+     LANDMARK SHOWCASE (marquee ticker)
+════════════════════════════════════════════════════════════ -->
+<section class="marquee-section" aria-hidden="true">
+  <div class="marquee-track">
+    <div class="marquee-inner">
+      {% set landmarks_ticker = [
+        ("🗼", "Eiffel Tower"), ("🏛️", "Colosseum"), ("🗽", "Statue of Liberty"),
+        ("🕰️", "Big Ben"), ("🕌", "Taj Mahal"), ("🏯", "Great Wall"),
+        ("🏔️", "Machu Picchu"), ("🎭", "Sydney Opera House"), ("⛪", "Sagrada Família"),
+        ("🏺", "Acropolis"), ("✝️", "Christ the Redeemer"), ("🌉", "Golden Gate"),
+        ("🌋", "Mount Fuji"), ("🏰", "Alhambra"), ("🗿", "Petra"),
+        ("🏟️", "Chichen Itza"), ("🪨", "Stonehenge"), ("🏙️", "Burj Khalifa"),
+        ("🗼", "Eiffel Tower"), ("🏛️", "Colosseum"), ("🗽", "Statue of Liberty"),
+        ("🕰️", "Big Ben"), ("🕌", "Taj Mahal"), ("🏯", "Great Wall"),
+      ] %}
+      {% for emoji, name in landmarks_ticker %}
+        <div class="marquee-item">
+          <span class="marquee-emoji">{{ emoji }}</span>
+          <span class="marquee-name">{{ name }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════
+     HOW IT WORKS
+════════════════════════════════════════════════════════════ -->
+<section class="section" id="how-it-works">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Simple &amp; Fast</span>
+      <h2 class="section-title">How It Works</h2>
+      <p class="section-subtitle">
+        Three easy steps — from photo to full landmark information in under two seconds.
+      </p>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step-card" data-step="1">
+        <div class="step-number">01</div>
+        <div class="step-icon">
+          <i data-feather="upload"></i>
+        </div>
+        <h3>Upload Your Photo</h3>
+        <p>Drag and drop or click to upload any JPG, PNG, or WEBP image of a famous landmark from anywhere in the world.</p>
+      </div>
+
+      <div class="step-connector" aria-hidden="true">
+        <i data-feather="arrow-right"></i>
+      </div>
+
+      <div class="step-card" data-step="2">
+        <div class="step-number">02</div>
+        <div class="step-icon">
+          <i data-feather="cpu"></i>
+        </div>
+        <h3>AI Analysis</h3>
+        <p>Our MobileNetV2 model — fine-tuned on 50 world-famous landmarks — analyses your image and classifies it with high accuracy.</p>
+      </div>
+
+      <div class="step-connector" aria-hidden="true">
+        <i data-feather="arrow-right"></i>
+      </div>
+
+      <div class="step-card" data-step="3">
+        <div class="step-number">03</div>
+        <div class="step-icon">
+          <i data-feather="map-pin"></i>
+        </div>
+        <h3>Get Results</h3>
+        <p>Instantly receive the landmark name, country, city, historical description, year built, and a confidence score.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════
+     UPLOAD SECTION
+════════════════════════════════════════════════════════════ -->
+<section class="section section--dark upload-section" id="upload">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Let's Go</span>
+      <h2 class="section-title">Identify Your Landmark</h2>
+      <p class="section-subtitle">
+        Supports JPG, PNG, WEBP · Max 16 MB · Results in &lt;2 seconds
+      </p>
+    </div>
+
+    <div class="upload-wrapper">
+      <form action="{{ url_for('main.predict') }}" method="POST" enctype="multipart/form-data" id="upload-form">
+
+        <!-- Drop Zone -->
+        <div class="drop-zone" id="drop-zone" role="button" tabindex="0"
+             aria-label="Click or drag and drop an image here">
+          <div class="drop-zone-default" id="drop-zone-default">
+            <div class="drop-zone-icon">
+              <i data-feather="image"></i>
+            </div>
+            <p class="drop-zone-title">Drop your image here</p>
+            <p class="drop-zone-sub">or <span class="drop-zone-link">click to browse</span></p>
+            <p class="drop-zone-hint">JPG · PNG · WEBP · GIF &nbsp;|&nbsp; Max 16 MB</p>
+          </div>
+
+          <!-- Preview (hidden until file selected) -->
+          <div class="drop-zone-preview" id="drop-zone-preview" hidden>
+            <img id="preview-img" src="" alt="Preview of uploaded image" />
+            <div class="preview-overlay">
+              <button type="button" class="preview-remove" id="preview-remove" aria-label="Remove image">
+                <i data-feather="x"></i> Remove
+              </button>
+            </div>
+          </div>
+
+          <input type="hidden" name="image_url" id="image-url-input" />
+          <input type="file" name="image" id="file-input"
+                 accept=".jpg,.jpeg,.png,.webp,.gif"
+                 class="drop-zone-input" aria-hidden="true" />
+        </div>
+
+        <!-- File info bar -->
+        <div class="file-info-bar" id="file-info-bar" hidden>
+          <i data-feather="check-circle" class="file-info-icon"></i>
+          <span id="file-info-name">filename.jpg</span>
+          <span id="file-info-size" class="file-info-size">0 KB</span>
+        </div>
+
+        <!-- Submit -->
+        <div class="upload-actions">
+          <button type="submit" class="btn btn-primary btn-xl" id="submit-btn" disabled>
+            <span class="btn-text">
+              <i data-feather="search"></i>
+              Identify Landmark
+            </span>
+            <span class="btn-loading" hidden>
+              <span class="spinner"></span>
+              Analysing…
+            </span>
+          </button>
+          <p class="upload-disclaimer">
+            <i data-feather="shield"></i>
+            Your image is analysed locally and never stored permanently.
+          </p>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</section>
+
+
+{% if history %}
+<!-- ════════════════════════════════════════════════════════════
+     RECENT DISCOVERIES GALLERY
+════════════════════════════════════════════════════════════ -->
+<section class="section section--dark history-section" id="recent-discoveries">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Travel Log</span>
+      <h2 class="section-title">Recent Discoveries</h2>
+      <p class="section-subtitle">
+        Browse recently identified landmarks and travel searches.
+      </p>
+    </div>
+
+    <div class="history-grid">
+      {% for item in history %}
+        <a href="{{ url_for('main.view_history', entry_id=item.id) }}" class="history-card">
+          <div class="history-image-wrapper">
+            <img src="{% if item.image_url %}{{ item.image_url }}{% elif item.image_filename %}{{ url_for('main.uploaded_file', filename=item.image_filename) }}{% else %}/static/img/placeholder.svg{% endif %}" alt="{{ item.name }}" loading="lazy" />
+            <div class="history-badge">
+              <span class="history-confidence">{{ item.confidence | round(0) }}% Match</span>
+            </div>
+          </div>
+          <div class="history-card-info">
+            <div class="history-card-header">
+              <span class="history-flag">{{ item.flag }}</span>
+              <span class="history-name">{{ item.name }}</span>
+            </div>
+            <span class="history-loc">
+              <i data-feather="map-pin"></i> {{ item.city }}, {{ item.country }}
+            </span>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+
+<!-- ════════════════════════════════════════════════════════════
+     SUPPORTED LANDMARKS GRID
+════════════════════════════════════════════════════════════ -->
+<section class="section" id="landmarks">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Coverage</span>
+      <h2 class="section-title">Supported Landmarks</h2>
+      <p class="section-subtitle">
+        Our model recognises these world-famous landmarks across 20+ countries.
+      </p>
+    </div>
+
+    <div class="landmarks-grid">
+      {% set landmarks_list = [
+        ("🗼", "Eiffel Tower", "Paris, France"),
+        ("🏛️", "Colosseum", "Rome, Italy"),
+        ("🗽", "Statue of Liberty", "New York, USA"),
+        ("🕰️", "Big Ben", "London, UK"),
+        ("🕌", "Taj Mahal", "Agra, India"),
+        ("🏯", "Great Wall of China", "Beijing, China"),
+        ("🏔️", "Machu Picchu", "Cusco, Peru"),
+        ("🎭", "Sydney Opera House", "Sydney, Australia"),
+        ("⛪", "Sagrada Família", "Barcelona, Spain"),
+        ("🏺", "Acropolis", "Athens, Greece"),
+        ("✝️", "Christ the Redeemer", "Rio de Janeiro, Brazil"),
+        ("🌉", "Golden Gate Bridge", "San Francisco, USA"),
+        ("🌋", "Mount Fuji", "Shizuoka, Japan"),
+        ("🏰", "Alhambra", "Granada, Spain"),
+        ("🗿", "Petra", "Jordan"),
+        ("🏟️", "Chichen Itza", "Yucatán, Mexico"),
+        ("🪨", "Stonehenge", "Wiltshire, UK"),
+        ("🏙️", "Burj Khalifa", "Dubai, UAE"),
+        ("🏗️", "Empire State Building", "New York, USA"),
+        ("🏺", "Pyramids of Giza", "Giza, Egypt"),
+        ("⛪", "Notre-Dame", "Paris, France"),
+        ("🗼", "Leaning Tower of Pisa", "Pisa, Italy"),
+        ("🏯", "Angkor Wat", "Siem Reap, Cambodia"),
+        ("🌊", "Niagara Falls", "USA/Canada"),
+      ] %}
+
+      {% for emoji, name, location in landmarks_list %}
+        <div class="landmark-card">
+          <span class="landmark-card-emoji">{{ emoji }}</span>
+          <div class="landmark-card-info">
+            <span class="landmark-card-name">{{ name }}</span>
+            <span class="landmark-card-loc">
+              <i data-feather="map-pin"></i> {{ location }}
+            </span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="landmarks-cta">
+      <a href="#upload" class="btn btn-primary">
+        <i data-feather="camera"></i>
+        Try Uploading a Photo
+      </a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════
+     MODEL / TECH SECTION
+════════════════════════════════════════════════════════════ -->
+<section class="section section--accent" id="model">
+  <div class="container">
+    <div class="tech-split">
+      <div class="tech-text">
+        <span class="section-label">Under the Hood</span>
+        <h2 class="section-title">Powered by MobileNetV2</h2>
+        <p>
+          LandmarkVision uses a <strong>MobileNetV2</strong> convolutional neural network
+          pre-trained on ImageNet and fine-tuned on the
+          <em>Famous Places</em> dataset from Kaggle (~53 MB, 50 world landmarks).
+        </p>
+        <p>
+          Transfer learning lets us achieve high accuracy with a lightweight model that
+          runs in milliseconds — no GPU required at inference time.
+        </p>
+        <ul class="tech-list">
+          <li><i data-feather="check"></i> MobileNetV2 backbone (ImageNet pre-trained)</li>
+          <li><i data-feather="check"></i> GlobalAveragePooling + Dense classification head</li>
+          <li><i data-feather="check"></i> Two-phase fine-tuning (feature extraction → full fine-tune)</li>
+          <li><i data-feather="check"></i> Data augmentation for robustness</li>
+          <li><i data-feather="check"></i> 224×224 input resolution</li>
+        </ul>
+        <a href="{{ url_for('main.about') }}" class="btn btn-outline">
+          <i data-feather="info"></i>
+          Learn More About the Model
+        </a>
+      </div>
+
+      <div class="tech-stats-panel">
+        <div class="tech-stat-card">
+          <div class="tech-stat-icon"><i data-feather="layers"></i></div>
+          <div class="tech-stat-value">MobileNetV2</div>
+          <div class="tech-stat-label">Architecture</div>
+        </div>
+        <div class="tech-stat-card">
+          <div class="tech-stat-icon"><i data-feather="database"></i></div>
+          <div class="tech-stat-value">53 MB</div>
+          <div class="tech-stat-label">Dataset Size</div>
+        </div>
+        <div class="tech-stat-card">
+          <div class="tech-stat-icon"><i data-feather="grid"></i></div>
+          <div class="tech-stat-value">50</div>
+          <div class="tech-stat-label">Landmark Classes</div>
+        </div>
+        <div class="tech-stat-card">
+          <div class="tech-stat-icon"><i data-feather="zap"></i></div>
+          <div class="tech-stat-value">&lt;2s</div>
+          <div class="tech-stat-label">Inference Time</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════
+     FINAL CTA SECTION
+════════════════════════════════════════════════════════════ -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-card">
+      <div class="cta-orb cta-orb--1"></div>
+      <div class="cta-orb cta-orb--2"></div>
+      <h2>Ready to Identify a Landmark?</h2>
+      <p>Upload your travel photo now and let AI do the rest. Fast, free, and incredibly accurate.</p>
+      <a href="#upload" class="btn btn-primary btn-xl" id="final-cta-btn">
+        <i data-feather="upload-cloud"></i>
+        Upload a Photo Now
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

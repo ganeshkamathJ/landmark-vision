@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+
+{% block title %}Result — {{ info.name }} | Landmark Vision{% endblock %}
+{% block meta_desc %}LandmarkVision identified your image as {{ info.name }} in {{ info.city }}, {{ info.country }}.{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+{% endblock %}
+
+{% block content %}
+
+<!-- ── Page hero ───────────────────────────────────────────── -->
+<section class="result-hero">
+  <div class="result-hero-bg">
+    <div class="hero-orb hero-orb--1"></div>
+    <div class="hero-orb hero-orb--2"></div>
+  </div>
+  <div class="container">
+    <nav class="result-breadcrumb" aria-label="Breadcrumb">
+      <a href="{{ url_for('main.index') }}"><i data-feather="home"></i> Home</a>
+      <span aria-hidden="true"><i data-feather="chevron-right"></i></span>
+      <span>Result</span>
+    </nav>
+    <h1 class="result-hero-title">
+      Landmark <span class="gradient-text">Identified!</span>
+    </h1>
+  </div>
+</section>
+
+<!-- ── Result body ─────────────────────────────────────────── -->
+<section class="section result-section">
+  <div class="container">
+
+
+
+    <div class="result-grid">
+
+      <!-- Left: Uploaded image + confidence -->
+      <div class="result-image-panel">
+        <div class="result-image-card">
+          <div class="result-image-wrapper">
+            <img src="{% if image_url %}{{ image_url }}{% elif image_filename %}{{ url_for('main.uploaded_file', filename=image_filename) }}{% else %}/static/img/placeholder.svg{% endif %}"
+                 alt="Landmark image"
+                 id="result-img"
+                 onerror="this.src='/static/img/placeholder.svg'" />
+            <div class="result-image-overlay">
+              <span class="result-badge">
+                <i data-feather="eye"></i> {% if source == 'wikipedia_search' %}Search View{% else %}AI Prediction{% endif %}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Confidence meter -->
+        <div class="confidence-card">
+          <div class="confidence-header">
+            <span>Confidence Score</span>
+            <span class="confidence-value" id="confidence-value">{{ confidence | round(0) | int }}%</span>
+          </div>
+          <div class="confidence-bar-bg">
+            <div class="confidence-bar-fill"
+                 id="confidence-bar"
+                 data-value="{{ confidence }}"
+                 style="width: 0%"></div>
+          </div>
+          <p class="confidence-label">
+            {% if confidence >= 80 %}
+              <i data-feather="check-circle" class="c-green"></i> High confidence prediction
+            {% elif confidence >= 50 %}
+              <i data-feather="alert-circle" class="c-yellow"></i> Moderate confidence
+            {% else %}
+              <i data-feather="x-circle" class="c-red"></i> Low confidence — try a clearer image
+            {% endif %}
+            {% if demo_mode %}
+              <span style="display:block;margin-top:4px;font-size:0.75rem;opacity:0.6">
+                (Demo mode — add a HuggingFace or API key for real AI identification)
+              </span>
+            {% endif %}
+          </p>
+        </div>
+
+        <!-- Try again -->
+        <a href="{{ url_for('main.index') }}#upload" class="btn btn-outline btn-full">
+          <i data-feather="refresh-cw"></i> Try Another Image
+        </a>
+      </div>
+
+      <!-- Right: Landmark info -->
+      <div class="result-info-panel">
+
+        <!-- Header card -->
+        <div class="result-name-card">
+          <div class="result-name-body">
+            <p class="result-category-tag">{{ info.category }}</p>
+            <h2 class="result-landmark-name">{{ info.name }}</h2>
+            <div class="result-location">
+              <span class="location-chip">
+                <i data-feather="map-pin"></i> {{ info.city }}
+              </span>
+              <span class="location-chip">
+                <i data-feather="globe"></i> {{ info.country }}
+              </span>
+              {% if info.year_built != '—' %}
+              <span class="location-chip">
+                <i data-feather="calendar"></i> Built {{ info.year_built }}
+              </span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="result-description-card">
+          <h3><i data-feather="book-open"></i> About This Landmark</h3>
+          <p>{{ info.description }}</p>
+        </div>
+
+        <!-- Map Location -->
+        {% if info.latitude and info.longitude %}
+        <div class="result-map-card">
+          <h3><i data-feather="map"></i> Landmark Location</h3>
+          <div id="map"></div>
+        </div>
+        {% endif %}
+
+        <!-- Quick fact chips -->
+        <div class="result-facts-card">
+          <h3><i data-feather="star"></i> Quick Facts</h3>
+          <div class="facts-grid">
+            <div class="fact-item">
+              <span class="fact-label">Country</span>
+              <span class="fact-value">{{ info.country }}</span>
+            </div>
+            <div class="fact-item">
+              <span class="fact-label">City</span>
+              <span class="fact-value">{{ info.city }}</span>
+            </div>
+            <div class="fact-item">
+              <span class="fact-label">Category</span>
+              <span class="fact-value">{{ info.category }}</span>
+            </div>
+            <div class="fact-item">
+              <span class="fact-label">Year Built</span>
+              <span class="fact-value">{{ info.year_built }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="result-actions">
+          <a href="https://en.wikipedia.org/wiki/{{ info.name | urlencode }}"
+             target="_blank" rel="noopener"
+             class="btn btn-outline">
+            <i data-feather="external-link"></i> View on Wikipedia
+          </a>
+          <a href="https://www.google.com/search?q={{ info.name | urlencode }}"
+             target="_blank" rel="noopener"
+             class="btn btn-outline">
+            <i data-feather="search"></i> Search on Google
+          </a>
+          <button class="btn btn-ghost" id="share-btn" onclick="shareLandmark()">
+            <i data-feather="share-2"></i> Share Result
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Related landmarks -->
+    <div class="related-section">
+      <h3 class="related-title">Explore Other Landmarks</h3>
+      <div class="related-grid">
+        {% set related = [
+          ("🗼", "Eiffel Tower", "Paris, France"),
+          ("🏛️", "Colosseum", "Rome, Italy"),
+          ("🏛️", "Taj Mahal", "Agra, India"),
+          ("⛰️", "Machu Picchu", "Peru"),
+          ("🏛️", "Sydney Opera House", "Australia"),
+          ("🗻", "Mount Fuji", "Japan"),
+        ] %}
+        {% for emoji, name, loc in related %}
+          {% if name != info.name %}
+          <a href="{{ url_for('main.search', q=name) }}" class="related-card">
+            <span class="related-emoji">{{ emoji }}</span>
+            <span class="related-name">{{ name }}</span>
+            <span class="related-loc">{{ loc }}</span>
+          </a>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+{% if info.latitude and info.longitude %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+  // Initialize map when document loads
+  window.addEventListener('DOMContentLoaded', () => {
+    const lat = {{ info.latitude }};
+    const lng = {{ info.longitude }};
+    const map = L.map('map').setView([lat, lng], 13);
+
+    // CartoDB Dark Matter dark mode tile provider
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd',
+      maxZoom: 20
+    }).addTo(map);
+
+    L.marker([lat, lng]).addTo(map)
+      .bindPopup("<b>{{ info.name }}</b><br>{{ info.city }}, {{ info.country }}")
+      .openPopup();
+  });
+</script>
+{% endif %}
+
+<script>
+  // Animate confidence bar on load
+  window.addEventListener('load', () => {
+    const bar = document.getElementById('confidence-bar');
+    if (bar) {
+      const val = bar.dataset.value;
+      setTimeout(() => {
+        bar.style.width = val + '%';
+        // Color based on confidence
+        if (val >= 80) bar.style.background = 'var(--color-success)';
+        else if (val >= 50) bar.style.background = 'var(--color-warning)';
+        else bar.style.background = 'var(--color-danger)';
+      }, 300);
+    }
+  });
+
+  function shareLandmark() {
+    const text = `I just identified the {{ info.name }} in {{ info.city }}, {{ info.country }} using LandmarkVision AI! 🏛️`;
+    if (navigator.share) {
+      navigator.share({ title: 'LandmarkVision', text, url: window.location.href });
+    } else {
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('share-btn');
+        btn.innerHTML = '<i data-feather="check"></i> Copied!';
+        feather.replace();
+        setTimeout(() => {
+          btn.innerHTML = '<i data-feather="share-2"></i> Share Result';
+          feather.replace();
+        }, 2000);
+      });
+    }
+  }
+</script>
+{% endblock %}

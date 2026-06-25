@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}About — Landmark Vision{% endblock %}
+{% block meta_desc %}Learn how Landmark Vision uses MobileNetV2 transfer learning and a Kaggle dataset to recognise famous world landmarks from photos.{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+  <div class="page-hero-bg">
+    <div class="hero-orb hero-orb--1"></div>
+    <div class="hero-orb hero-orb--2"></div>
+  </div>
+  <div class="container">
+    <span class="section-label">The Project</span>
+    <h1 class="page-hero-title">About <span class="gradient-text">Landmark Vision</span></h1>
+    <p class="page-hero-sub">An end-to-end deep learning project — from raw Kaggle images to a live web application.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container about-container">
+
+    <!-- What is it -->
+    <div class="about-block">
+      <div class="about-icon"><i data-feather="info"></i></div>
+      <div class="about-text">
+        <h2>What is Landmark Vision?</h2>
+        <p>
+          Landmark Vision is a full-stack AI web application that uses computer vision to identify
+          famous world landmarks from uploaded photos. Built with Python, Flask, and TensorFlow,
+          it demonstrates a complete machine learning pipeline — from dataset preparation
+          and model training to web deployment.
+        </p>
+      </div>
+    </div>
+
+    <div class="about-divider"></div>
+
+    <!-- The Model -->
+    <div class="about-block">
+      <div class="about-icon"><i data-feather="cpu"></i></div>
+      <div class="about-text">
+        <h2>The Model — MobileNetV2</h2>
+        <p>
+          The backbone of Landmark Vision is <strong>MobileNetV2</strong>, a lightweight
+          convolutional neural network architecture designed for mobile and embedded applications.
+          We use <strong>transfer learning</strong>: MobileNetV2 is pre-trained on ImageNet
+          (1.2M images, 1000 classes) and then fine-tuned on our landmark dataset.
+        </p>
+        <div class="about-pipeline">
+          <div class="pipeline-step">
+            <span class="pipeline-num">1</span>
+            <span>Load MobileNetV2 (ImageNet weights, <code>include_top=False</code>)</span>
+          </div>
+          <div class="pipeline-step">
+            <span class="pipeline-num">2</span>
+            <span>Add <code>GlobalAveragePooling2D → Dense(256) → Dropout(0.5) → Dense(N, softmax)</code></span>
+          </div>
+          <div class="pipeline-step">
+            <span class="pipeline-num">3</span>
+            <span>Phase 1: Freeze base — train classification head (10 epochs, lr=1e-3)</span>
+          </div>
+          <div class="pipeline-step">
+            <span class="pipeline-num">4</span>
+            <span>Phase 2: Unfreeze top 30 layers — fine-tune (10 epochs, lr=1e-5)</span>
+          </div>
+          <div class="pipeline-step">
+            <span class="pipeline-num">5</span>
+            <span>Save as <code>model/landmark_model.h5</code></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="about-divider"></div>
+
+    <!-- The Dataset -->
+    <div class="about-block">
+      <div class="about-icon"><i data-feather="database"></i></div>
+      <div class="about-text">
+        <h2>The Dataset</h2>
+        <p>
+          We use the <strong>Pictures of Famous Places</strong> dataset from Kaggle
+          (<code>vaslemon/pictures-of-famous-places</code>), a curated collection of
+          ~53 MB containing photos of 50 of the world's most famous landmarks.
+          Each landmark has its own folder with multiple images, ideal for fine-tuning.
+        </p>
+        <div class="dataset-table-wrapper">
+          <table class="dataset-table">
+            <thead>
+              <tr>
+                <th>Property</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Dataset</td><td>Pictures of Famous Places</td></tr>
+              <tr><td>Source</td><td>Kaggle (vaslemon)</td></tr>
+              <tr><td>Size</td><td>~53 MB</td></tr>
+              <tr><td>Classes</td><td>50 world landmarks</td></tr>
+              <tr><td>Format</td><td>JPG/PNG, folder-per-class</td></tr>
+              <tr><td>Split</td><td>80% train / 20% validation</td></tr>
+              <tr><td>Input Resolution</td><td>224 × 224 pixels</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="kaggle-cmd">
+          <p><strong>Download command:</strong></p>
+          <pre><code>kaggle datasets download -d vaslemon/pictures-of-famous-places -p ./data/
+unzip ./data/pictures-of-famous-places.zip -d ./data/landmarks/</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="about-divider"></div>
+
+    <!-- Stack -->
+    <div class="about-block">
+      <div class="about-icon"><i data-feather="layers"></i></div>
+      <div class="about-text">
+        <h2>Technology Stack</h2>
+        <div class="stack-grid">
+          <div class="stack-card">
+            <span class="stack-emoji">🐍</span>
+            <span class="stack-name">Python 3.10+</span>
+            <span class="stack-role">Core language</span>
+          </div>
+          <div class="stack-card">
+            <span class="stack-emoji">🧠</span>
+            <span class="stack-name">TensorFlow 2.15</span>
+            <span class="stack-role">Deep learning</span>
+          </div>
+          <div class="stack-card">
+            <span class="stack-emoji">🏺</span>
+            <span class="stack-name">Flask 3.0</span>
+            <span class="stack-role">Web framework</span>
+          </div>
+          <div class="stack-card">
+            <span class="stack-emoji">🖼️</span>
+            <span class="stack-name">Pillow</span>
+            <span class="stack-role">Image processing</span>
+          </div>
+          <div class="stack-card">
+            <span class="stack-emoji">🔢</span>
+            <span class="stack-name">NumPy</span>
+            <span class="stack-role">Array operations</span>
+          </div>
+          <div class="stack-card">
+            <span class="stack-emoji">🚀</span>
+            <span class="stack-name">Gunicorn</span>
+            <span class="stack-role">Production server</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="about-cta">
+      <a href="{{ url_for('main.index') }}#upload" class="btn btn-primary btn-lg">
+        <i data-feather="upload-cloud"></i> Try It Now
+      </a>
+      <a href="https://github.com/" class="btn btn-outline btn-lg" target="_blank" rel="noopener">
+        <i data-feather="github"></i> View on GitHub
+      </a>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

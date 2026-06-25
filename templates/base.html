@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- SEO -->
+  <title>{% block title %}Landmark Vision — AI Landmark Recognition{% endblock %}</title>
+  <meta name="description" content="{% block meta_desc %}Upload any photo of a famous landmark and let our AI instantly identify it — powered by MobileNetV2 deep learning.{% endblock %}" />
+  <meta name="keywords" content="landmark recognition, AI, machine learning, travel, deep learning, MobileNetV2" />
+  <meta name="author" content="Landmark Vision" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Landmark Vision — AI Landmark Recognition" />
+  <meta property="og:description" content="Instantly identify famous landmarks from photos using deep learning." />
+  <meta property="og:type" content="website" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet" />
+
+  <!-- Icons (Feather Icons via CDN) -->
+  <script src="https://unpkg.com/feather-icons@4.29.1/dist/feather.min.js" defer></script>
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+
+  {% block head_extra %}{% endblock %}
+</head>
+<body>
+
+  <!-- ── Navigation ──────────────────────────────────────────── -->
+  <header class="site-header" id="site-header">
+    <nav class="nav container">
+      <a href="{{ url_for('main.index') }}" class="nav-logo" id="nav-logo">
+        <span class="logo-icon">🏛️</span>
+        <span class="logo-text">Landmark<strong>Vision</strong></span>
+      </a>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="{{ url_for('main.index') }}" class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}">Home</a></li>
+        <li><a href="{{ url_for('main.about') }}" class="nav-link {% if request.endpoint == 'main.about' %}active{% endif %}">About</a></li>
+        <li><a href="{{ url_for('main.index') }}#how-it-works" class="nav-link">How It Works</a></li>
+        <li>
+          <a href="{{ url_for('main.index') }}#upload" class="nav-cta" id="nav-cta-btn">
+            Try It Free
+          </a>
+        </li>
+      </ul>
+
+      <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- ── Flash messages ──────────────────────────────────────── -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-container" id="flash-container">
+        {% for category, message in messages %}
+          <div class="flash flash--{{ category }}" role="alert">
+            <i data-feather="{% if category == 'error' %}alert-circle{% elif category == 'warning' %}alert-triangle{% else %}check-circle{% endif %}"></i>
+            <span>{{ message }}</span>
+            <button class="flash-close" onclick="this.parentElement.remove()" aria-label="Close">
+              <i data-feather="x"></i>
+            </button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- ── Main content ────────────────────────────────────────── -->
+  <main id="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- ── Footer ─────────────────────────────────────────────── -->
+  <footer class="site-footer" id="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="{{ url_for('main.index') }}" class="nav-logo">
+            <span class="logo-icon">🏛️</span>
+            <span class="logo-text">Landmark<strong>Vision</strong></span>
+          </a>
+          <p>AI-powered landmark recognition using MobileNetV2 deep learning. Upload any landmark photo and get instant results.</p>
+        </div>
+        <div class="footer-links">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="{{ url_for('main.index') }}">Home</a></li>
+            <li><a href="{{ url_for('main.about') }}">About</a></li>
+            <li><a href="{{ url_for('main.index') }}#how-it-works">How It Works</a></li>
+            <li><a href="{{ url_for('main.index') }}#upload">Try It Now</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Technology</h4>
+          <ul>
+            <li><a href="https://www.tensorflow.org/" target="_blank" rel="noopener">TensorFlow</a></li>
+            <li><a href="https://flask.palletsprojects.com/" target="_blank" rel="noopener">Flask</a></li>
+            <li><a href="https://www.kaggle.com/datasets/vaslemon/pictures-of-famous-places" target="_blank" rel="noopener">Dataset (Kaggle)</a></li>
+            <li><a href="/api/predict" target="_blank">REST API</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="https://github.com/" target="_blank" rel="noopener">GitHub</a></li>
+            <li><a href="{{ url_for('main.about') }}">Model Info</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 LandmarkVision. Built with ❤️ using Python, Flask &amp; TensorFlow.</p>
+        <p class="footer-tech-badge">
+          <span>🐍 Python</span>
+          <span>🧠 TensorFlow</span>
+          <span>🏺 Flask</span>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ── Scripts ─────────────────────────────────────────────── -->
+  <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+  {% block scripts %}{% endblock %}
+
+</body>
+</html>

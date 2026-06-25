@@ -1,0 +1,11 @@
+Flask>=3.0.0
+tensorflow>=2.15.0          # for training; not required to run in demo mode
+Pillow>=10.0.0
+numpy>=1.26.0
+Werkzeug>=3.0.0
+gunicorn>=22.0.0            # Linux/Mac production server
+kaggle>=1.6.0               # for dataset download
+scikit-learn>=1.4.0         # for evaluate.py
+matplotlib>=3.8.0           # for evaluate.py confusion matrix
+seaborn>=0.13.0             # for evaluate.py heatmap
+tqdm>=4.66.0
