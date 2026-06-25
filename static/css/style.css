@@ -242,14 +242,15 @@ code { font-family: 'Courier New', monospace; }
   display: flex;
   align-items: center;
   gap: var(--sp-sm);
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: 1.5rem;
+  font-weight: 700;
   color: var(--clr-text);
   transition: opacity var(--t-fast);
+  margin-right: auto;
 }
 
 .nav-logo:hover { opacity: 0.85; }
-.logo-icon { font-size: 1.5rem; }
+.logo-icon { font-size: 1.8rem; }
 .logo-text strong { color: var(--clr-accent); }
 
 .nav-links {

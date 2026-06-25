@@ -60,6 +60,11 @@ Thumbs.db
 *.log
 logs/
 
+# ── Database (local user data — auto-recreated on first run) ─────────
+history.db
+*.db
+*.sqlite3
+
 # ── Testing ──────────────────────────────────────────────────────────
 .pytest_cache/
 .coverage
