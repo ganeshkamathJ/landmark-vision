@@ -268,9 +268,10 @@
   // ── Fetch landmark reference image from Wikipedia (client-side) ──
   (async function loadLandmarkPhoto() {
     const landmarkName = {{ info.name | tojson }};
-    const card  = document.getElementById('ref-photo-card');
-    const img   = document.getElementById('ref-photo-img');
-    if (!card || !img || !landmarkName) return;
+    const card    = document.getElementById('ref-photo-card');
+    const refImg  = document.getElementById('ref-photo-img');
+    const mainImg = document.getElementById('result-img');
+    if (!landmarkName) return;
 
     try {
       // Wikipedia REST API — supports CORS, no key needed
@@ -279,20 +280,33 @@
       if (!res.ok) return;
       const data = await res.json();
 
-      // Try thumbnail first, then originalimage
+      // Try originalimage first (higher quality), then thumbnail
       const src = (data.originalimage && data.originalimage.source)
                 || (data.thumbnail    && data.thumbnail.source)
                 || '';
-      if (src) {
-        img.src = src;
-        img.onload = () => {
+      if (!src) return;
+
+      // 1. Update the main left-panel image if it is showing a placeholder
+      //    (happens on search results when server-side fetch fails on HF Spaces)
+      if (mainImg) {
+        const currentSrc = mainImg.getAttribute('src') || '';
+        const isPlaceholder = currentSrc.includes('placeholder') || currentSrc === '' || currentSrc.endsWith('/');
+        if (isPlaceholder) {
+          mainImg.src = src;
+        }
+      }
+
+      // 2. Also show the "Landmark Photo" reference card
+      if (card && refImg) {
+        refImg.src = src;
+        refImg.onload = () => {
           card.style.display = 'block';
-          // Re-run feather icons for the caption icon
           if (window.feather) feather.replace();
         };
       }
+
     } catch (e) {
-      // Silent fail — card stays hidden
+      // Silent fail — images stay as placeholder
     }
   })();
 </script>
