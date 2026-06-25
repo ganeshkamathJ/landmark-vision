@@ -93,6 +93,10 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 ul { list-style: none; }
 code { font-family: 'Courier New', monospace; }
 
+[hidden] {
+  display: none !important;
+}
+
 /* ── Layout ──────────────────────────────────────────────────── */
 .container {
   width: 100%;

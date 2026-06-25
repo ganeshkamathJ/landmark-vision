@@ -168,20 +168,30 @@ function initUpload() {
   }
 
   // Form submit → show loading state
+  let isSubmitting = false;
   if (uploadForm) {
     uploadForm.addEventListener('submit', (e) => {
+      if (isSubmitting) {
+        e.preventDefault();
+        return;
+      }
       const urlInput = document.getElementById('image-url-input');
       const hasUrl = urlInput && urlInput.value.trim() !== '';
       if (!fileInput.files.length && !hasUrl) {
         e.preventDefault();
         return;
       }
+      isSubmitting = true;
       const btnText    = submitBtn.querySelector('.btn-text');
       const btnLoading = submitBtn.querySelector('.btn-loading');
       if (btnText && btnLoading) {
         btnText.hidden    = true;
         btnLoading.hidden = false;
-        submitBtn.disabled = true;
+        // Delay disabling the button to the next event loop tick to allow the browser
+        // to submit the form successfully. Otherwise, some browsers abort form submission.
+        setTimeout(() => {
+          submitBtn.disabled = true;
+        }, 0);
       }
     });
   }
