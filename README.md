@@ -57,7 +57,7 @@ landmark-vision/
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/your-username/landmark-vision.git
+git clone https://github.com/ganeshkamathJ/landmark-vision.git
 cd landmark-vision
 
 python -m venv venv
