@@ -173,6 +173,19 @@ def predict():
 
     info = _build_info(result)
 
+    # Fetch landmark reference image from Wikipedia
+    landmark_ref_image = ""
+    try:
+        wiki = _search_wikipedia(info.get("name", ""))
+        if wiki:
+            landmark_ref_image = wiki.get("image_url", "")
+            # Also update coordinates if not already set from prediction
+            if not info.get("latitude") and wiki.get("latitude"):
+                info["latitude"]  = wiki["latitude"]
+                info["longitude"] = wiki["longitude"]
+    except Exception as wiki_exc:
+        logger.warning("Could not fetch Wikipedia reference image: %s", wiki_exc)
+
     # Log to history database (include the served URL so history cards show the image)
     try:
         from app.db import add_history_entry
@@ -188,12 +201,13 @@ def predict():
 
     return render_template(
         "result.html",
-        info           = info,
-        confidence     = result["confidence"],
-        demo_mode      = result["demo_mode"],
-        source         = result.get("source", "demo"),
-        image_filename = unique_name,
-        image_url      = url_for('main.uploaded_file', filename=unique_name),
+        info                = info,
+        confidence          = result["confidence"],
+        demo_mode           = result["demo_mode"],
+        source              = result.get("source", "demo"),
+        image_filename      = unique_name,
+        image_url           = url_for('main.uploaded_file', filename=unique_name),
+        landmark_ref_image  = landmark_ref_image,
     )
 
 
@@ -435,12 +449,13 @@ def search():
 
     return render_template(
         "result.html",
-        info           = info,
-        confidence     = 100.0,
-        demo_mode      = False,
-        source         = "wikipedia_search",
-        image_url      = wiki_img,
-        image_filename = None
+        info                = info,
+        confidence          = 100.0,
+        demo_mode           = False,
+        source              = "wikipedia_search",
+        image_url           = wiki_img,
+        image_filename      = None,
+        landmark_ref_image  = wiki_img,
     )
 
 

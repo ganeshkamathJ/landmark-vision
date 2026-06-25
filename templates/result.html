@@ -115,6 +115,26 @@
           <p>{{ info.description }}</p>
         </div>
 
+        <!-- Landmark Reference Photo -->
+        {% set ref_img = landmark_ref_image if landmark_ref_image is defined else '' %}
+        {% if ref_img %}
+        <div class="result-ref-photo-card">
+          <h3><i data-feather="image"></i> Landmark Photo</h3>
+          <div class="ref-photo-wrapper">
+            <img
+              src="{{ ref_img }}"
+              alt="{{ info.name }}"
+              class="ref-photo-img"
+              onerror="this.parentElement.style.display='none'"
+            />
+            <div class="ref-photo-caption">
+              <i data-feather="info"></i>
+              {{ info.name }} — {{ info.city }}, {{ info.country }}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
         <!-- Map Location -->
         {% if info.latitude and info.longitude %}
         <div class="result-map-card">
