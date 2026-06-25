@@ -13,10 +13,15 @@ short_description: AI-powered landmark recognition using HuggingFace Vision AI
 
 > **AI-powered landmark recognition** — Upload any photo of a famous world landmark and get instant identification with name, country, city, and historical description.
 
+[![Live Demo](https://img.shields.io/badge/🤗%20Live%20Demo-HuggingFace%20Spaces-yellow?style=for-the-badge)](https://huggingface.co/spaces/ganeshkamathhhh/landmark-vision)
+[![GitHub](https://img.shields.io/badge/GitHub-Source%20Code-black?style=for-the-badge&logo=github)](https://github.com/ganeshkamathJ/landmark-vision)
+
 ![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python)
 ![Flask](https://img.shields.io/badge/Flask-3.0-green?logo=flask)
 ![TensorFlow](https://img.shields.io/badge/TensorFlow-2.15-orange?logo=tensorflow)
 ![License](https://img.shields.io/badge/License-MIT-purple)
+
+> 🌐 **[Click here to try the live app →](https://huggingface.co/spaces/ganeshkamathhhh/landmark-vision)**
 
 ---
 
