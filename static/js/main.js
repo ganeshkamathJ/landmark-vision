@@ -11,6 +11,13 @@ document.addEventListener('DOMContentLoaded', () => {
   initUpload();
   initScrollAnimations();
   initSmoothScrollCTA();
+
+  // Clean up 'error' query parameter from the URL bar to prevent showing on refresh
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has('error')) {
+    const cleanUrl = window.location.pathname + window.location.hash;
+    window.history.replaceState({}, document.title, cleanUrl);
+  }
 });
 
 /* ── Navigation ─────────────────────────────────────────────── */

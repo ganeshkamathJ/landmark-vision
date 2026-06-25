@@ -134,22 +134,18 @@ def predict():
                         f.write(response.read())
         except Exception as exc:
             logger.exception("Failed to download dropped image URL: %s", exc)
-            flash("Failed to retrieve the image. Please try saving it locally and uploading it.", "error")
-            return redirect(url_for("main.index"))
+            return redirect(url_for("main.index", error="Failed to retrieve the image. Please try saving it locally and uploading it."))
     else:
         if "image" not in request.files:
-            flash("No file part in the request.", "error")
-            return redirect(url_for("main.index"))
+            return redirect(url_for("main.index", error="No file part in the request."))
 
         file = request.files["image"]
 
         if file.filename == "":
-            flash("No file selected.", "error")
-            return redirect(url_for("main.index"))
+            return redirect(url_for("main.index", error="No file selected."))
 
         if not _allowed_file(file.filename):
-            flash("Unsupported file type. Please upload PNG, JPG, JPEG, or WEBP.", "error")
-            return redirect(url_for("main.index"))
+            return redirect(url_for("main.index", error="Unsupported file type. Please upload PNG, JPG, JPEG, or WEBP."))
 
         ext         = file.filename.rsplit(".", 1)[-1].lower()
         unique_name = f"{uuid.uuid4().hex}.{ext}"
@@ -168,8 +164,7 @@ def predict():
         )
     except Exception as exc:
         logger.exception("Prediction failed: %s", exc)
-        flash("Prediction failed — please try a different image.", "error")
-        return redirect(url_for("main.index"))
+        return redirect(url_for("main.index", error="Prediction failed — please try a different image."))
 
     info = _build_info(result)
 
@@ -382,8 +377,7 @@ def _search_wikipedia(query: str) -> dict | None:
 def search():
     query = request.args.get("q", "").strip()
     if not query:
-        flash("Please enter a landmark to search.", "warning")
-        return redirect(url_for("main.index"))
+        return redirect(url_for("main.index", error="Please enter a landmark to search."))
 
     # Try to match our local database for facts
     from app.landmark_info import LANDMARK_INFO, get_landmark
@@ -406,12 +400,8 @@ def search():
     )
 
     if not is_valid:
-        flash(
-            f"'{query}' does not appear to be a geographical landmark or historical site. "
-            "Please try searching for a famous monument, building, or city (e.g., Taj Mahal, Colosseum).",
-            "warning"
-        )
-        return redirect(url_for("main.index"))
+        error_msg = f"'{query}' does not appear to be a geographical landmark or historical site. Please try searching for a famous monument, building, or city (e.g., Taj Mahal, Colosseum)."
+        return redirect(url_for("main.index", error=error_msg))
 
     # Build response info dict — wiki_result may be None if matched locally but has no Wikipedia page
     wiki_title   = wiki_result["title"]   if wiki_result else (local_info.get("name") or query)
@@ -496,8 +486,7 @@ def view_history(entry_id):
     from app.db import get_history_entry
     entry = get_history_entry(entry_id)
     if not entry:
-        flash("History entry not found.", "error")
-        return redirect(url_for("main.index"))
+        return redirect(url_for("main.index", error="History entry not found."))
     
     info = {
         "name": entry["name"],

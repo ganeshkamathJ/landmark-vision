@@ -32,6 +32,18 @@
       will instantly identify it — giving you its name, country, city, and history.
     </p>
 
+    {% if request.args.get('error') %}
+    <div class="search-error-alert" id="search-error-alert">
+      <div class="search-error-content">
+        <i data-feather="alert-triangle"></i>
+        <span>{{ request.args.get('error') }}</span>
+      </div>
+      <button class="search-error-close" onclick="document.getElementById('search-error-alert').remove()" aria-label="Close">
+        <i data-feather="x"></i>
+      </button>
+    </div>
+    {% endif %}
+
     <form action="{{ url_for('main.search') }}" method="GET" class="hero-search-form">
       <div class="search-input-wrapper">
         <i data-feather="search" class="search-icon"></i>
